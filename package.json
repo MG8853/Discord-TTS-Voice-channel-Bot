@@ -1,0 +1,19 @@
+{
+  "name": "mg-yomiage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "voice_bot_node.js",
+  "scripts": {
+    "Bot": "npm run voice_bot_node.js"
+  },
+  "dependencies": {
+    "@discordjs/opus": "0.3.2",
+    "discord.js": "12.3.1",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-static": "4.2.7",
+    "fs": "0.0.1-security",
+    "node-opus": "0.3.3",
+    "opusscript": "0.0.7",
+    "voice-text": "0.1.2"
+  }
+}
