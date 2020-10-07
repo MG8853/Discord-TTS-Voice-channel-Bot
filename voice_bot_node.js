@@ -25,7 +25,7 @@ const client = new Discord.Client();
 
 const voiceText = new VoiceText('nvjdg6i2d866blq3'); //Voice Text API key
 
-client.login('NjAyMDMyMTQwMDc4ODA5MTE5.XTK8Hw.7OlgsmfGlA40Qb2FAa9TtuBIElM'); //Discord login token
+client.login('--token---'); //Discord login token
 
 process.on('uncaughtException', function (err) {
     console.error(err);
