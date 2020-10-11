@@ -25,7 +25,7 @@ const client = new Discord.Client();
 
 const voiceText = new VoiceText('nvjdg6i2d866blq3'); //Voice Text API key
 
-client.login('token--------'); //Discord login token
+client.login('MzE3NTQwOTI3NDExNTg1MDI1.WSfDCA.MPNkrZvpsvukpcF28jOtH9EKT3Q'); //Discord login token
 
 process.on('uncaughtException', function (err) {
     console.error(err);
@@ -143,7 +143,7 @@ client.on('message', message => {
         }
     }
 
-    if (!((message.content.indexOf('!') == 0) || (message.content.indexOf('/') == 0)) && (message.member.id != 381054450451742720) && (message.member.id !== client.user.id)) {
+    if (!((message.content.indexOf('!') == 0) || (message.content.indexOf(':') == 0) || (message.content.indexOf('<') == 0) || (message.content.indexOf('/') == 0)) && (message.member.id != 381054450451742720) && (message.member.id !== client.user.id)) {
         if (conext) {
             try {
                 yomiage({
