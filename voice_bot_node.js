@@ -17,7 +17,7 @@ let mode_list = {
     1: 'HOYA VoiceText API'
 }
 
-let voice_patan_1 = 'hikari'; //初期時のよみあげ音声
+let voice_patan_1 = 'takeru'; //初期時のよみあげ音声
 
 let mode = 1;
 
@@ -25,7 +25,7 @@ const client = new Discord.Client();
 
 const voiceText = new VoiceText('nvjdg6i2d866blq3'); //Voice Text API key
 
-client.login('MzE3NTQwOTI3NDExNTg1MDI1.WSfDCA.MPNkrZvpsvukpcF28jOtH9EKT3Q'); //Discord login token
+client.login('---token'); //Discord login token
 
 process.on('uncaughtException', function (err) {
     console.error(err);
@@ -143,7 +143,29 @@ client.on('message', message => {
         }
     }
 
-    if (!((message.content.indexOf('!') == 0) || (message.content.indexOf(':') == 0) || (message.content.indexOf('<') == 0) || (message.content.indexOf('/') == 0)) && (message.member.id != 381054450451742720) && (message.member.id !== client.user.id)) {
+    if (!(
+        (message.content.indexOf('!') == 0) ||
+        (message.content.indexOf(':') == 0) ||
+        (message.content.indexOf('<') == 0) ||
+        (message.content.indexOf('>') == 0) ||
+        (message.content.indexOf('*') == 0) ||
+        (message.content.indexOf('?') == 0) ||
+        (message.content.indexOf('$') == 0) ||
+        (message.content.indexOf('#') == 0) ||
+        (message.content.indexOf('&') == 0) ||
+        (message.member.id == 172002275412279296) ||
+        (message.member.id == 498519480985583636) ||
+        (message.member.id == 252128902418268161) ||
+        (message.member.id == 235088799074484224) ||
+        (message.member.id == 289066747443675143) ||
+        (message.member.id == 548847830303899668) ||
+        (message.member.id == 185013154198061056) ||
+        (message.member.id == 761600164044472382) ||
+        (message.member.id == 705694926859403327) ||
+        (message.member.id == 489034866206310410) ||
+        (message.member.id == 657487514600341515) ||
+        (message.member.id == 602032140078809119) ||
+        (message.content.indexOf('/') == 0)) && (message.member.id != 381054450451742720) && (message.member.id !== client.user.id)) {
         if (conext) {
             try {
                 yomiage({
@@ -158,7 +180,7 @@ client.on('message', message => {
             console.log("Botがボイスチャンネルへ接続してません。");
         }
     } else {
-        console.log("読み上げ対象外のチャットです");
+        console.log("読み上げ対象外のチャットです。");
     }
 
     function url_delete(str) {
@@ -172,7 +194,7 @@ client.on('message', message => {
         mode_api(obj).then((buffer) => {
             writeFileSync('voice.wav', buffer);
             obj.cons.play("./voice.wav"); //保存されたWAV再生
-            console.log(obj.msg + 'の読み上げ完了');
+            console.log(obj.msg + 'の読み上げ完了。');
         }).catch((error) => {
             console.log('error ->');
             console.error(error);
