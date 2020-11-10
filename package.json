@@ -4,7 +4,8 @@
   "description": "MG-YOMIAGE-Discord-Bot",
   "main": "voice_bot_node.js",
   "scripts": {
-    "bot": "node voice_bot_node.js"
+    "start": "node main.js",
+    "test": "node main.js"
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,7 @@
   },
   "dependencies": {
     "@discordjs/opus": "0.3.2",
-    "discord.js": "12.3.1",
+    "discord.js": "latest",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "4.2.7",
     "fs": "0.0.1-security",

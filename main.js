@@ -153,7 +153,6 @@ client.on('message', message => {
         (message.content.indexOf('$') == 0) ||
         (message.content.indexOf('#') == 0) ||
         (message.content.indexOf('&') == 0) ||
-        (message.member.id == 172002275412279296) ||
         (message.member.id == 498519480985583636) ||
         (message.member.id == 252128902418268161) ||
         (message.member.id == 235088799074484224) ||
