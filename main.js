@@ -25,7 +25,7 @@ const client = new Discord.Client();
 
 const voiceText = new VoiceText('nvjdg6i2d866blq3'); //Voice Text API key
 
-client.login('---token'); //Discord login token
+client.login('--token--'); //Discord login token
 
 process.on('uncaughtException', function (err) {
     console.error(err);
@@ -45,6 +45,7 @@ client.on('message', message => {
     // Voice only works in guilds, if the message does not come from a guild,
     // we ignore it
     if (!message.guild) return;
+    if (message.author.bot) return;
 
     if (message.content === '/join') {
         // Only try to join the sender's voice channel if they are in one themselves
@@ -144,26 +145,28 @@ client.on('message', message => {
     }
 
     if (!(
-        (message.content.indexOf('!') == 0) ||
-        (message.content.indexOf(':') == 0) ||
-        (message.content.indexOf('<') == 0) ||
-        (message.content.indexOf('>') == 0) ||
-        (message.content.indexOf('*') == 0) ||
-        (message.content.indexOf('?') == 0) ||
-        (message.content.indexOf('$') == 0) ||
-        (message.content.indexOf('#') == 0) ||
-        (message.content.indexOf('&') == 0) ||
-        (message.member.id == 498519480985583636) ||
-        (message.member.id == 252128902418268161) ||
-        (message.member.id == 235088799074484224) ||
-        (message.member.id == 289066747443675143) ||
-        (message.member.id == 548847830303899668) ||
-        (message.member.id == 185013154198061056) ||
-        (message.member.id == 761600164044472382) ||
-        (message.member.id == 705694926859403327) ||
-        (message.member.id == 489034866206310410) ||
-        (message.member.id == 657487514600341515) ||
-        (message.member.id == 602032140078809119) ||
+        // (message.content.indexOf('!') == 0) ||
+        // (message.content.indexOf(':') == 0) ||
+        // (message.content.indexOf('<') == 0) ||
+        // (message.content.indexOf('>') == 0) ||
+        // (message.content.indexOf('*') == 0) ||
+        // (message.content.indexOf('?') == 0) ||
+        // (message.content.indexOf('$') == 0) ||
+        // (message.content.indexOf('#') == 0) ||
+        // (message.content.indexOf('&') == 0) ||
+        // (message.content.indexOf('%') == 0) ||
+        // (message.channel.id == 776746877915234324) ||
+        // (message.member.id == 498519480985583636) ||
+        // (message.member.id == 252128902418268161) ||
+        // (message.member.id == 235088799074484224) ||
+        // (message.member.id == 289066747443675143) ||
+        // (message.member.id == 548847830303899668) ||
+        // (message.member.id == 185013154198061056) ||
+        // (message.member.id == 761600164044472382) ||
+        // (message.member.id == 705694926859403327) ||
+        // (message.member.id == 489034866206310410) ||
+        // (message.member.id == 657487514600341515) ||
+        // (message.member.id == 602032140078809119) ||
         (message.content.indexOf('/') == 0)) && (message.member.id != 381054450451742720) && (message.member.id !== client.user.id)) {
         if (conext) {
             try {
@@ -198,6 +201,8 @@ client.on('message', message => {
             console.log('error ->');
             console.error(error);
             message.channel.send(error, { code: true });
+            message.channel.send('強制終了します。', { code: true });
+            process.exit(0);
         });
     }
 
