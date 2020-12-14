@@ -1,7 +1,7 @@
 {
   "Api": {
     "discordToken": "",
-    "voiceTextApiKey": ""
+    "voiceTextApiKey": "nvjdg6i2d866blq3"
   },
   "Prefix": "/",
   "AutoRestart": true,
@@ -16,6 +16,9 @@
     ],
     "prefixes": [
       "!",
+      "%",
+      "!1919",
+      "t!",
       "/"
     ],
     "bots": true

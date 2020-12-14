@@ -1,3 +1,5 @@
+https://github.com/noriokun4649/Discord-TTS-Voice-channel-Bot
+
 # Discord-TTS-Voice-channel-Bot
 Discordでテキストチャンネルのチャットをボイスチャンネルで読み上げしてくれるBotです。
 
