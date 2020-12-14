@@ -145,16 +145,16 @@ client.on('message', message => {
     }
 
     if (!(
-        // (message.content.indexOf('!') == 0) ||
-        // (message.content.indexOf(':') == 0) ||
-        // (message.content.indexOf('<') == 0) ||
-        // (message.content.indexOf('>') == 0) ||
-        // (message.content.indexOf('*') == 0) ||
-        // (message.content.indexOf('?') == 0) ||
-        // (message.content.indexOf('$') == 0) ||
-        // (message.content.indexOf('#') == 0) ||
-        // (message.content.indexOf('&') == 0) ||
-        // (message.content.indexOf('%') == 0) ||
+        (message.content.indexOf('!') == 0) ||
+        (message.content.indexOf(':') == 0) ||
+        (message.content.indexOf('<') == 0) ||
+        (message.content.indexOf('>') == 0) ||
+        (message.content.indexOf('*') == 0) ||
+        (message.content.indexOf('?') == 0) ||
+        (message.content.indexOf('$') == 0) ||
+        (message.content.indexOf('#') == 0) ||
+        (message.content.indexOf('&') == 0) ||
+        (message.content.indexOf('%') == 0) ||
         // (message.channel.id == 776746877915234324) ||
         // (message.member.id == 498519480985583636) ||
         // (message.member.id == 252128902418268161) ||
