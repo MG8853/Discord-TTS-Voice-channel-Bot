@@ -1,6 +1,6 @@
 {
   "Api": {
-    "discordToken": "",
+    "discordToken": "MzE3NTQwOTI3NDExNTg1MDI1.WSfDCA.vHVtH4ZOsFJ3jitdbDmZtPqIMsQ",
     "voiceTextApiKey": "nvjdg6i2d866blq3"
   },
   "Prefix": "/",
@@ -16,9 +16,6 @@
     ],
     "prefixes": [
       "!",
-      "%",
-      "!1919",
-      "t!",
       "/"
     ],
     "bots": true
