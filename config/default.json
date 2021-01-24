@@ -1,14 +1,15 @@
 {
   "Api": {
-    "discordToken": "MzE3NTQwOTI3NDExNTg1MDI1.WSfDCA.vHVtH4ZOsFJ3jitdbDmZtPqIMsQ",
-    "voiceTextApiKey": "nvjdg6i2d866blq3"
+    "discordToken": "",
+    "voiceTextApiKey": ""
   },
   "Prefix": "/",
   "AutoRestart": true,
   "ReadMe": false,
-  "Defalut": {
+  "AllTextChannelRead": false,
+  "Default": {
     "apiType": 1,
-    "voiceType": "hikari"
+    "voiceType": "haruka"
   },
   "BlackLists": {
     "memberIds": [

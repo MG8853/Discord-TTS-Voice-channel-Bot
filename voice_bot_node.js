@@ -3,6 +3,8 @@ const {VoiceText} = require('voice-text');
 const {Readable} = require('stream');
 const conf = require('config-reloadable');
 const client = new Discord.Client();
+const EventEmitter = require('events');
+const GoogleTts = require('google-translate-tts');
 
 let config = conf();
 const voiceLists1 = {
@@ -14,7 +16,8 @@ const voiceLists1 = {
     show: 'ショウ（男性）'
 };
 const modeList1 = {
-    1: 'HOYA VoiceText API'
+    1: 'HOYA VoiceText API',
+    2: 'Google Translate'
 };
 let context;
 let discordToken = null;
@@ -22,10 +25,12 @@ let voiceTextApiKey = null;
 let prefix = '/';
 let autoRestart = true;
 let readMe = false;
+let allTextChannelRead = false;
 let apiType = 1;
 let voiceType = 'haruka';
 let blackList;
 let channelHistory;
+let textChannelHistory;
 let speed = 100;
 let pitch = 100;
 const timeoutOffset = 5;
@@ -39,9 +44,11 @@ const readConfig = () => {
     if (typeof autoRestart !== 'boolean') throw new Error('Require a boolean type.');
     readMe = config.get('ReadMe');
     if (typeof readMe !== 'boolean') throw new Error('Require a boolean type.');
-    apiType = config.get('Defalut.apiType');
+    allTextChannelRead = config.get('AllTextChannelRead');
+    if (typeof readMe !== 'boolean') throw new Error('Require a boolean type.');
+    apiType = config.get('Default.apiType');
     if (!modeList1[apiType]) throw new Error('Unknown api.');
-    voiceType = config.get('Defalut.voiceType');
+    voiceType = config.get('Default.voiceType');
     if (!voiceLists1[voiceType]) throw new Error('Unknown voice.');
     blackList = config.get('BlackLists');
     return true;
@@ -98,7 +105,8 @@ const discordLogin = async () => {
 };
 
 readConfig();
-let voicePattern1 = voiceType; //初期時のよみあげ音声
+const voicePattern1 = voiceType; //初期時のよみあげ音声
+const userVoiceType = {}; //読み上げ音声ユーザーのmemberID別
 let mode = apiType;
 const voiceText = new VoiceText(voiceTextApiKey); //Voice Text API key
 
@@ -132,17 +140,17 @@ client.on('message', (message) => {
 
     const isRead = (id) => readMe === false ? id !== client.user.id : readMe;
 
-    const url_delete = (str) => {
+    const urlDelete = (str) => {
         const pat = /(https?:\/\/[\x21-\x7e]+)/g;
         return str.replace(pat, ' URL省略。');
     };
 
-    const emoji_delete = (str) => {
+    const emojiDelete = (str) => {
         const pat = /(<:\w*:\d*>)/g;
         return str.replace(pat, '');
     };
 
-    const mention_replace = (str) => {
+    const mentionReplace = (str) => {
         const pat = /<@!(\d*)>/g;
         const [matchAllElement] = str.matchAll(pat);
         if (matchAllElement === undefined) return str;
@@ -151,23 +159,44 @@ client.on('message', (message) => {
 
     const yomiage = (obj) => {
         if (obj.cons && obj.cons.status === 0 && (message.guild.id === context.channel.guild.id)) {
-            mode_api(obj).then((buffer) => {
-                obj.cons.play(bufferToStream(buffer)); //保存されたWAV再生
-                console.log(`${obj.msg}の読み上げ完了`);
-            }).catch((error) => {
-                console.log('error ->');
-                console.error(error);
-                message.channel.send(`${modeList1[mode]}の呼び出しにエラーが発生しました。\nエラー内容:${error.details[0].message}`, {code: true});
-            });
+            const sepMessage = obj.msg.match(/.{1,200}/g); //200以上の場合分割
+            const emitter = new EventEmitter(); //イベント用意
+            const readFunction = () => {//読み上げ機能
+                obj.msg = sepMessage.shift(); //queue処理
+                modeApi(obj).then((buffer) => {
+                    const desp = obj.cons.play(bufferToStream(buffer)); //保存されたWAV再生
+                    desp.on('finish', () => {
+                        if (sepMessage.length > 0) emitter.emit('read'); //読み上げにまだ残りあるならイベント発火
+                    });
+                    console.log(`${obj.msg}の読み上げ完了`);
+                }).catch((error) => {
+                    console.log('error ->');
+                    console.error(error);
+                    message.channel.send(`${modeList1[mode]}の呼び出しにエラーが発生しました。\nエラー内容:${error.details[0].message}`, {code: true});
+                });
+            };
+            emitter.on('read', () => readFunction()); //イベント受信で読み上げ実行
+            readFunction();//最初の読み上げ
         } else {
             console.log('Botがボイスチャンネルへ接続してません。');
         }
     };
 
-    const mode_api = (obj) => {
+    const modeApi = (obj) => {
         if (mode === 1) {
-            return voiceText.fetchBuffer(obj.msg, {format: 'wav', speaker: voicePattern1, pitch, speed});
-        } else {
+            return voiceText.fetchBuffer(obj.msg, {
+                format: 'wav',
+                speaker: userVoiceType[obj.memberId] != null ? userVoiceType[obj.memberId] : voicePattern1,
+                pitch,
+                speed
+            });
+        } else if (mode === 2) {
+            return GoogleTts.synthesize({
+                text: obj.msg,
+                voice: 'ja-JP'
+            });
+        } else
+        {
             throw Error(`不明なAPIが選択されています:${mode}`);
         }
     };
@@ -179,15 +208,29 @@ client.on('message', (message) => {
         return stream;
     };
 
+    const changeParameter = (mess, text, para) => {
+        const split = mess.split(' ');
+        if (mode === 1) {
+            if (1 < split.length && split[1] <= 200 && split[1] >= 50) {
+                message.channel.send(`読み上げ音声の${text}を${split[1]}に変更しました。`, {code: true});
+                return Number(split[1]);
+            } else {
+                message.reply(`読み上げ音声の${text}は 50 ～ 200 の範囲内で設定してください`);
+                return para;
+            }
+        }
+    };
+
     if (message.content === `${prefix}join`) {
         if (message.member.voice.channel) {
             if (!context || (context && context.status === 4)) {
                 if (voiceChanelJoin(message.member.voice.channel)) {
+                    textChannelHistory = message.channel.id;
                     console.log('ボイスチャンネルへ接続しました。');
                     message.channel.send('ボイスチャンネルへ接続しました。', {code: true});
-                    message.reply(`\nチャットの読み上げ準備ができました。切断時は${prefix}killです。\n${ 
-                        prefix}mode で読み上げAPIを変更できます。\n ${prefix 
-                        }voiceでよみあげ音声を選択できます。\n 音声が読み上げられない場合は${prefix}reconnectを試してみてください。`);
+                    message.reply(`\nチャットの読み上げ準備ができました。切断時は${prefix}killです。\n${
+                        prefix}mode で読み上げAPIを変更できます。\n ${prefix
+                    }voiceでよみあげ音声を選択できます。\n 音声が読み上げられない場合は${prefix}reconnectを試してみてください。`);
                 }
             } else {
                 message.reply('既にボイスチャンネルへ接続済みです。');
@@ -204,6 +247,7 @@ client.on('message', (message) => {
             if (message.member.voice.channel) {
                 setTimeout(() => {
                     if (voiceChanelJoin(message.member.voice.channel)) {
+                        textChannelHistory = message.channel.id;
                         console.log('ボイスチャンネルへ再接続しました。');
                         message.channel.send('ボイスチャンネルへ再接続しました。', {code: true});
                     }
@@ -267,7 +311,7 @@ client.on('message', (message) => {
         if (mode === 1) {
             if (1 < split.length) {
                 if (voiceLists1[split[1]] != null) {
-                    voicePattern1 = split[1];
+                    userVoiceType[message.member.id] = split[1];
                     const voiceMessage = `読み上げ音声を${split[1]} : ${voiceLists1[split[1]]}に設定しました。`;
                     message.reply(voiceMessage);
                     yomiage({
@@ -280,6 +324,8 @@ client.on('message', (message) => {
             } else {
                 message.reply(`読み上げ音声タイプを指定する必要があります。例：${prefix}voice hikari 指定可能な音声タイプは${prefix}typeで見ることが可能です。`);
             }
+        } else {
+            message.reply('このAPIでは音声タイプを変更出来ません。');
         }
     }
 
@@ -289,42 +335,27 @@ client.on('message', (message) => {
     }
 
     if (message.content.indexOf(`${prefix}pitch`) === 0) {
-        const split = message.content.split(' ');
-        if (mode === 1) {
-            if (1 < split.length) {
-                if (split[1] <= 200 && split[1] >= 50) {
-                    pitch = Number(split[1]);
-                    message.channel.send(`読み上げ音声の高さを${split[1]}に変更しました。`, {code: true});
-                } else {
-                    message.reply('読み上げ音声の高さは 50 ～ 200 の範囲内で設定してください。');
-                }
-            }
-        }
+        pitch = changeParameter(message.content,'高さ', pitch);
     }
 
     if (message.content.indexOf(`${prefix}speed`) === 0) {
-        const split = message.content.split(' ');
-        if (mode === 1) {
-            if (1 < split.length) {
-                if (split[1] <= 200 && split[1] >= 50) {
-                    speed = Number(split[1]);
-                    message.channel.send(`読み上げ音声の速度を${split[1]}に変更しました。`, {code: true});
-                } else {
-                    message.reply('読み上げ音声の速度は 50 ～ 200 の範囲内で設定してください');
-                }
-            }
-        }
+        speed = changeParameter(message.content,'速度', speed);
     }
 
     if (!(isBot() || isBlackListsFromID(message.member.id) || isBlackListsFromPrefixes(message.content)) && isRead(message.member.id)) {
-        try {
-            yomiage({
-                msg: mention_replace(emoji_delete(url_delete(`${message.content}。`))),
-                cons: context
-            });
-        } catch (error) {
-            console.log(error.message);
-            message.channel.send(error.message, {code: true});
+        if (message.channel.id === textChannelHistory || allTextChannelRead) {
+            try {
+                yomiage({
+                    msg: mentionReplace(emojiDelete(urlDelete(`${message.content}。`))),
+                    cons: context,
+                    memberId: message.member.id
+                });
+            } catch (error) {
+                console.log(error.message);
+                message.channel.send(error.message, {code: true});
+            }
+        } else {
+            console.log('Join,Reconnectコマンドが実行されたテキストチャンネル以外です');
         }
     } else {
         console.log('読み上げ対象外のチャットです');

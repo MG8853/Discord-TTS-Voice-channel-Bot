@@ -2,10 +2,11 @@
   "name": "discord-tts-voice-channel-bot",
   "description": "voice channel bot",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "voice_bot_node.js",
   "scripts": {
-    "start": "node voice_bot_node.js"
+    "start": "node voice_bot_node.js",
+    "test": "eslint *.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,9 @@
     "@discordjs/opus": "^0.3.3",
     "config": "^3.3.2",
     "config-reloadable": "^1.0.8",
-    "discord.js": "latest",
+    "discord.js": "^12.4.0",
     "ffmpeg-static": "^4.2.7",
+    "google-translate-tts": "^0.3.0",
     "node-opus": "^0.3.3",
     "opusscript": "0.0.7",
     "voice-text": "^0.1.2"
