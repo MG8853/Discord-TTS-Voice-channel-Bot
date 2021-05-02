@@ -7,9 +7,11 @@
   "AutoRestart": true,
   "ReadMe": false,
   "AllTextChannelRead": false,
+  "AutoMessageRemove": false,
+  "UrlReplaceText": "URL省略",
   "Default": {
     "apiType": 1,
-    "voiceType": "haruka"
+    "voiceType": "hikari"
   },
   "BlackLists": {
     "memberIds": [
