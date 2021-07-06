@@ -7,18 +7,18 @@ Discordでテキストチャンネルのチャットをボイスチャンネル�
 # Docker版
 Docker版をGitHubのリポジトリにアップロードしたので下記コマンドで直接使えます。
 ```
-docker pull ghcr.io/noriokun4649/discord-tts-bot:1.0.0
+docker pull ghcr.io/noriokun4649/discord-tts-bot
 ```
 
 # 必要なもの
 Node.js v12.19.0以降
 
 # Bot実行の準備
-Node.jsで使うパッケージを準備
+Node.jsで使うパッケージを準備  
 ```
 npm install
 ```  
-※package.jsonがあるディレクトリで実行
+※package.jsonがあるディレクトリで実行  
 
 # Bot実行
 ```
@@ -37,6 +37,8 @@ configフォルダ内のdefault.jsonがコンフィグファイルです。
   "AutoRestart": true,
   "ReadMe": false,
   "AllTextChannelRead": false,
+  "AutoMessageRemove": false,
+  "UrlReplaceText": "URL省略",
   "Default": {
     "apiType": 1,
     "voiceType": "hikari"
@@ -63,6 +65,8 @@ configフォルダ内のdefault.jsonがコンフィグファイルです。
 | ReadMe  |  このBotが送るメッセージを読み上げるかどうか |
 | AllTextChannelRead  |  すべてのテキストチャンネルを読み上げるかどうか |
 |  |  ※falseの場合、join・reconnectコマンドを実行したテキストチャンネルのみ読み上げます |
+| AutoMessageRemove  |  読み上げたメッセージを自動削除するかどうか |
+| UrlReplaceText  |  URL読み上げ時に使われる読み上げテキスト |
 | apiType  |  デフォルトのAPIを指定 |
 | voiceType  |  デフォルトのボイスを指定 |
 | memberIds  |  読み上げから除外するユーザーのユーザーID |
@@ -79,8 +83,8 @@ configフォルダ内のdefault.jsonがコンフィグファイルです。
 | mode  |  読み上げに利用するTTSのAPIを変更します |
 | type  |  APIで利用可能な音声タイプを一覧表示します |
 | voice  |  音声タイプを変更します　※このコマンドを打った人のチャットのみが変更対象 |
-| speed  |  音声の速度を変更します(0～200の数値) |
-| pitch  |  音声の高さを変更します(0～200の数値) |
+| speed  |  音声の速度を変更します(50～200の数値) |
+| pitch  |  音声の高さを変更します(50～200の数値) |
 | reload  |  コンフィグを再読み込みします |
 
 # ライセンス
