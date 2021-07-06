@@ -19,7 +19,7 @@ const modeList1 = {
     1: 'HOYA VoiceText API',
     2: 'Google Translate'
 };
-let context;
+
 let discordToken = null;
 let voiceTextApiKey = null;
 let prefix = '/';
@@ -69,19 +69,14 @@ const autoRestartFunc = () => {
 
 const voiceChanelJoin = async (channelId) => {
     channelHistory = channelId;
-    await channelId.join()
-        .then((connection) => {
-            context = connection;
-        })
-        .catch((err) => {
-            console.log(err);
-            return false;
-        });
+    await channelId.join().catch((err) => {
+        console.log(err);
+        return false;
+    });
     return true;
 };
 
 const onErrorListen = (error) => {
-    if (context && context.status !== 4) context.disconnect();
     client.destroy();
     console.error(error.name);
     console.error(error.message);
@@ -127,6 +122,7 @@ client.on('ready', () => {
 
 client.on('message', (message) => {
     if (!message.guild) return;
+    const botUserVoiceConnection = message.guild.member(client.user).voice.connection;
 
     const isBlackListsFromPrefixes = (cont) => {
         const prefixes = blackList.get('prefixes');
@@ -162,6 +158,13 @@ client.on('message', (message) => {
         return str.replace(pat, client.users.resolve(matchAllElement[1]).username);
     };
 
+    const roleReplace = (str, guildid) => {
+        const pat = /<@&(\d*)>/g;
+        const [matchAllElement] = str.matchAll(pat);
+        if (matchAllElement === undefined) return str;
+        return str.replace(pat, client.guilds.resolve(guildid).roles.resolve(matchAllElement[1]).name);
+    };
+
     const messageAutoRemove = (obj) => {
         if (autoMessageRemove && obj.msg !== urlReplaceText) {
             obj.msgId != null ?
@@ -174,7 +177,7 @@ client.on('message', (message) => {
     };
 
     const yomiage = (obj) => {
-        if (obj.cons && obj.cons.status === 0 && (message.guild.id === context.channel.guild.id)) {
+        if (obj.cons && obj.cons.status === 0 && (message.guild.id === botUserVoiceConnection.channel.guild.id)) {
             const sepMessage = obj.msg.match(/.{1,200}/g); //200以上の場合分割
             const emitter = new EventEmitter(); //イベント用意
             const readFunction = () => {//読み上げ機能
@@ -244,7 +247,7 @@ client.on('message', (message) => {
 
     if (message.content === `${prefix}join`) {
         if (message.member.voice.channel) {
-            if (!context || (context && context.status === 4)) {
+            if (!botUserVoiceConnection || (botUserVoiceConnection && botUserVoiceConnection.status === 4)) {
                 if (voiceChanelJoin(message.member.voice.channel)) {
                     textChannelHistory = message.channel.id;
                     console.log('ボイスチャンネルへ接続しました。');
@@ -262,8 +265,8 @@ client.on('message', (message) => {
     }
 
     if (message.content === `${prefix}reconnect`) {
-        if (context && context.status !== 4) {
-            context.disconnect();
+        if (botUserVoiceConnection && botUserVoiceConnection.status !== 4) {
+            botUserVoiceConnection.disconnect();
             message.channel.send('5秒後にボイスチャンネルへ再接続します。', {code: true});
             if (message.member.voice.channel) {
                 setTimeout(() => {
@@ -282,8 +285,8 @@ client.on('message', (message) => {
     }
 
     if (message.content === `${prefix}kill`) {
-        if (context && context.status !== 4) {
-            context.disconnect();
+        if (botUserVoiceConnection && botUserVoiceConnection.status !== 4) {
+            botUserVoiceConnection.disconnect();
             message.channel.send(':dash:');
         } else {
             message.reply('Botはボイスチャンネルに接続していないようです。');
@@ -299,7 +302,7 @@ client.on('message', (message) => {
                 message.reply(modeMessage);
                 yomiage({
                     msg: modeMessage,
-                    cons: context
+                    cons: botUserVoiceConnection
                 });
             } else {
                 mode = Number(split[1]);
@@ -337,7 +340,7 @@ client.on('message', (message) => {
                     message.reply(voiceMessage);
                     yomiage({
                         msg: voiceMessage,
-                        cons: context
+                        cons: botUserVoiceConnection
                     });
                 } else {
                     message.reply(`指定された読み上げ音声タイプが不正です。指定可能な音声タイプは${prefix}typeで見ることが可能です。`);
@@ -367,8 +370,8 @@ client.on('message', (message) => {
         if (message.channel.id === textChannelHistory || allTextChannelRead) {
             try {
                 yomiage({
-                    msg: mentionReplace(emojiDelete(urlDelete(message.content))),
-                    cons: context,
+                    msg: mentionReplace(emojiDelete(urlDelete(roleReplace(message.content, message.guild.id)))),
+                    cons: botUserVoiceConnection,
                     memberId: message.member.id,
                     msgId: message.id
                 });
