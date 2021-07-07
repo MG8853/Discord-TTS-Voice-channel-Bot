@@ -1,0 +1,13 @@
+{
+  "name": "Discord-TTS-Voice-channel-Bot",
+  "description": "Discordでテキストチャンネルのチャットをボイスチャンネルで読み上げしてくれるBotです。",
+  "repository": "https://github.com/TeamFelnull/Discord-TTS-Voice-channel-Bot",
+  "logo": "https://media.discordapp.net/attachments/361063838642339856/862283068747939840/BOT.png",
+  "keywords": ["node", "discord", "heroku"],
+  "image": "heroku/nodejs",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TeamFelnull/Discord-TTS-Voice-channel-Bot.git"
+    "url": "https://github.com/TeamFelnull/Discord-TTS-Voice-channel-Bot.git"
   },
   "engines": {
-    "node": ">=12.20.0"
+    "node": "14.x"
   },
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
@@ -24,10 +24,14 @@
     "google-translate-tts": "^0.3.0",
     "node-opus": "^0.3.3",
     "opusscript": "0.0.7",
-    "voice-text": "^0.1.2"
+    "voice-text": "^0.1.2",
+    "ejs": "^3.1.5",
+    "express": "^4.15.2"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
-    "eslint-plugin-node": "^11.1.0"
+    "eslint-plugin-node": "^11.1.0",
+    "got": "^11.3.0",
+    "tape": "^4.7.0"
   }
 }
