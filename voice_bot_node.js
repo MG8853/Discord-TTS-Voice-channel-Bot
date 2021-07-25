@@ -118,6 +118,7 @@ process.on('unhandledRejection', onErrorListen);
 
 client.on('ready', () => {
     console.log('Bot準備完了');
+    console.log('BotReady!');
 });
 
 client.on('message', (message) => {
